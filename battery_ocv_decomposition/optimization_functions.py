@@ -61,13 +61,15 @@ def optimization(params, anode_interp, anode_x_values, cathode_interp, cathode_x
     if h > len(cathode_x_values):
         h = len(cathode_x_values)
 
-    v = anode_interp(a * anode_x_values[e:f])
-    w = interp1d(anode_x_values[e:f], v, kind='cubic', fill_value='extrapolate')
-    x_a = np.linspace(anode_x_values[e:f][0], anode_x_values[e:f][-1], 1001)
-
-    q = cathode_interp(c * cathode_x_values[g:h])
-    r = interp1d(cathode_x_values[g:h], q, kind='cubic', fill_value='extrapolate')
-    x_c = np.linspace(cathode_x_values[g:h][0], cathode_x_values[g:h][-1], 1001)
+    v = anode_interp(anode_x_values)
+    axv = anode_x_values * a
+    w = interp1d(axv[e:f], v[e:f], kind='cubic', fill_value='extrapolate')
+    x_a = np.linspace(axv[e:f][0], axv[e:f][-1], 1001)
+        
+    q = cathode_interp(cathode_x_values)
+    cxv = cathode_x_values * c
+    r = interp1d(cxv[g:h], q[g:h], kind='cubic', fill_value='extrapolate')
+    x_c = np.linspace(cxv[g:h][0], cxv[g:h][-1], 1001)
 
     anode_calculated = r(x_c) - OCV_battery
     cathode_calculated = w(x_a) + OCV_battery
@@ -179,21 +181,40 @@ def perform_full_optimization(SOC_battery, OCV_battery, interpolated_cathodes, i
         h_opt = len(Best_Cathode['x_values']) - int(h_percentage_opt * len(Best_Cathode['x_values']) * 0.15)
         best_parameters = a_opt, c_opt, e_opt, f_opt, g_opt, h_opt
 
-        v1 = Best_Anode['interpolated_function'](a_opt * Best_Anode['x_values'][e_opt:f_opt])
-        w1 = interp1d(Best_Anode['x_values'][e_opt:f_opt], v1, kind='cubic', fill_value='extrapolate')
-        x_a1 = np.linspace(Best_Anode['x_values'][e_opt:f_opt][0], Best_Anode['x_values'][e_opt:f_opt][-1], 1001)
-
-        q1 = Best_Cathode['interpolated_function'](c_opt * Best_Cathode['x_values'][g_opt:h_opt])
-        r1 = interp1d(Best_Cathode['x_values'][g_opt:h_opt], q1, kind='cubic', fill_value='extrapolate')
-        x_c1 = np.linspace(Best_Cathode['x_values'][g_opt:h_opt][0], Best_Cathode['x_values'][g_opt:h_opt][-1], 1001)
-
+        v1 = Best_Anode['interpolated_function'](Best_Anode['x_values'])
+        axv_opt = Best_Anode['x_values'] * a_opt
+        w1 = interp1d(axv_opt[e_opt:f_opt], v1[e_opt:f_opt], kind='cubic', fill_value='extrapolate')
+        w1_ns = interp1d(axv_opt, v1, kind='cubic', fill_value='extrapolate')
+        x_a1 = np.linspace(axv_opt[e_opt:f_opt][0], axv_opt[e_opt:f_opt][-1], 1001)
+        x_a1_ns = np.linspace(axv_opt[0], axv_opt[-1], 1001+e_opt+(1001-f_opt))
+    
+        q1 = Best_Cathode['interpolated_function'](Best_Cathode['x_values'])
+        cxv_opt = Best_Cathode['x_values'] * c_opt
+        r1 = interp1d(cxv_opt[g_opt:h_opt], q1[g_opt:h_opt], kind='cubic', fill_value='extrapolate')
+        r1_ns = interp1d(cxv_opt, q1, kind='cubic', fill_value='extrapolate')
+        x_c1 = np.linspace(cxv_opt[g_opt:h_opt][0], cxv_opt[g_opt:h_opt][-1], 1001)
+        x_c1_ns = np.linspace(cxv_opt[0], cxv_opt[-1], 1001+g_opt+(1001-h_opt))
         calculated_battery_OCV_opt = r1(x_c1) - w1(x_a1)
+
+        cscalesoc = x_c1 - min(x_c1)
+        c_SOC = cscalesoc / max(cscalesoc)
+
+        cfullscalesoc = x_c1_ns - min(x_c1)
+        c_SOC_full = cfullscalesoc / max(cscalesoc)
+    
+        ascalesoc = x_a1 - min(x_a1)
+        a_SOC = ascalesoc / max(ascalesoc)
+
+        afullscalesoc = x_a1_ns - min(x_a1)
+        a_SOC_full = afullscalesoc / max(ascalesoc)
 
         plt.figure(figsize=(8, 6))
         plt.plot(SOC_battery, OCV_battery, 'r-', label='Measured battery OCV')
         plt.plot(SOC_battery, calculated_battery_OCV_opt, 'b-', label='Optimized Battery OCV')
-        plt.plot(SOC_battery, r1(x_c1), 'g-', label='Optimized Cathode OCP')
-        plt.plot(SOC_battery, w1(x_a1), 'k-', label='Optimized Anode OCP')
+        plt.plot(c_SOC_full, r1_ns(x_c1_ns), 'r--')
+        plt.plot(c_SOC, r1(x_c1), 'g-', label='Optimized Cathode OCP')
+        plt.plot(a_SOC_full, w1_ns(x_a1_ns), 'r--')
+        plt.plot(a_SOC, w1(x_a1), 'k-', label='Optimized Anode OCP')
         plt.title("Optimization")
         plt.xlabel('SOC (% / 100)')
         plt.ylabel('OCV (V)')
@@ -259,21 +280,41 @@ def perform_full_optimization_parallel(SOC_battery, OCV_battery, interpolated_ca
         h_opt = len(Best_Cathode['x_values']) - int(h_percentage_opt * len(Best_Cathode['x_values']) * 0.15)
         best_parameters = a_opt, c_opt, e_opt, f_opt, g_opt, h_opt
 
-        v1 = Best_Anode['interpolated_function'](a_opt * Best_Anode['x_values'][e_opt:f_opt])
-        w1 = interp1d(Best_Anode['x_values'][e_opt:f_opt], v1, kind='cubic', fill_value='extrapolate')
-        x_a1 = np.linspace(Best_Anode['x_values'][e_opt:f_opt][0], Best_Anode['x_values'][e_opt:f_opt][-1], 1001)
+        v1 = Best_Anode['interpolated_function'](Best_Anode['x_values'])
+        axv_opt = Best_Anode['x_values'] * a_opt
+        w1 = interp1d(axv_opt[e_opt:f_opt], v1[e_opt:f_opt], kind='cubic', fill_value='extrapolate')
+        w1_ns = interp1d(axv_opt, v1, kind='cubic', fill_value='extrapolate')
+        x_a1 = np.linspace(axv_opt[e_opt:f_opt][0], axv_opt[e_opt:f_opt][-1], 1001)
+        x_a1_ns = np.linspace(axv_opt[0], axv_opt[-1], 1001+e_opt+(1001-f_opt))
 
-        q1 = Best_Cathode['interpolated_function'](c_opt * Best_Cathode['x_values'][g_opt:h_opt])
-        r1 = interp1d(Best_Cathode['x_values'][g_opt:h_opt], q1, kind='cubic', fill_value='extrapolate')
-        x_c1 = np.linspace(Best_Cathode['x_values'][g_opt:h_opt][0], Best_Cathode['x_values'][g_opt:h_opt][-1], 1001)
+        q1 = Best_Cathode['interpolated_function'](Best_Cathode['x_values'])
+        cxv_opt = Best_Cathode['x_values'] * c_opt
+        r1 = interp1d(cxv_opt[g_opt:h_opt], q1[g_opt:h_opt], kind='cubic', fill_value='extrapolate')
+        r1_ns = interp1d(cxv_opt, q1, kind='cubic', fill_value='extrapolate')
+        x_c1 = np.linspace(cxv_opt[g_opt:h_opt][0], cxv_opt[g_opt:h_opt][-1], 1001)
+        x_c1_ns = np.linspace(cxv_opt[0], cxv_opt[-1], 1001+g_opt+(1001-h_opt))
 
         calculated_battery_OCV_opt = r1(x_c1) - w1(x_a1)
+
+        cscalesoc = x_c1 - min(x_c1)
+        c_SOC = cscalesoc / max(cscalesoc)
+
+        cfullscalesoc = x_c1_ns - min(x_c1)
+        c_SOC_full = cfullscalesoc / max(cscalesoc)
+    
+        ascalesoc = x_a1 - min(x_a1)
+        a_SOC = ascalesoc / max(ascalesoc)
+
+        afullscalesoc = x_a1_ns - min(x_a1)
+        a_SOC_full = afullscalesoc / max(ascalesoc)
 
         plt.figure(figsize=(8, 6))
         plt.plot(SOC_battery, OCV_battery, 'r-', label='Measured battery OCV')
         plt.plot(SOC_battery, calculated_battery_OCV_opt, 'b-', label='Optimized Battery OCV')
-        plt.plot(SOC_battery, r1(x_c1), 'g-', label='Optimized Cathode OCP')
-        plt.plot(SOC_battery, w1(x_a1), 'k-', label='Optimized Anode OCP')
+        plt.plot(c_SOC_full, r1_ns(x_c1_ns), 'r--')
+        plt.plot(c_SOC, r1(x_c1), 'g-', label='Optimized Cathode OCP')
+        plt.plot(a_SOC_full, w1_ns(x_a1_ns), 'r--')
+        plt.plot(a_SOC, w1(x_a1), 'k-', label='Optimized Anode OCP')
         plt.title("Optimization")
         plt.xlabel('SOC (% / 100)')
         plt.ylabel('OCV (V)')
