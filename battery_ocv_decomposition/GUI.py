@@ -71,19 +71,19 @@ class OCVBatteryDecompositionGUI:
         self.label_binary_params = Label(self.master, text="Binary Parameters:")
         self.label_binary_params.pack()
 
-        self.battery_var = IntVar()
+        self.battery_var = IntVar(value=1)
         self.check_battery = Checkbutton(self.master, text="Battery", variable=self.battery_var)
         self.check_battery.pack()
 
-        self.anode_var = IntVar()
+        self.anode_var = IntVar(value=0)
         self.check_anode = Checkbutton(self.master, text="Anode", variable=self.anode_var)
         self.check_anode.pack()
 
-        self.cathode_var = IntVar()
+        self.cathode_var = IntVar(value=0)
         self.check_cathode = Checkbutton(self.master, text="Cathode", variable=self.cathode_var)
         self.check_cathode.pack()
 
-        self.derivative_var = IntVar()
+        self.derivative_var = IntVar(value=0)
         self.check_derivative = Checkbutton(self.master, text="Derivative Inverse", variable=self.derivative_var)
         self.check_derivative.pack()
 
