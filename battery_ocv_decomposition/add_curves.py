@@ -2,32 +2,34 @@ import os
 from scipy.interpolate import interp1d
 import numpy as np
 
-def add_half_cell_data(folder_path):
+def add_half_cell_data(directory_name):
     """
-    Add half-cell data from text files in a specified folder to a dictionary.
+    Add half-cell data from text files in the specified directory to a dictionary.
 
     Parameters:
-    - folder_path (str): The path to the folder containing text files with data.
+    - directory_name (str): The directory name containing text files with data.
 
     Raises:
-    - ValueError: If the specified folder does not exist.
+    - ValueError: If the specified directory does not exist.
 
     Returns:
     - dict: A dictionary containing half-cell data.
     """
-    # Check if the folder exists
-    if not os.path.exists(folder_path):
-        raise ValueError(f"The folder '{folder_path}' does not exist.")
+    directory_path = os.path.join(os.getcwd(), directory_name)
+
+    # Check if the directory exists
+    if not os.path.exists(directory_path):
+        raise ValueError(f"The directory '{directory_path}' does not exist.")
 
     # Create a dictionary to store the half-cell data
     half_cell_dictionary = {}
 
-    # Get a list of all txt files in the folder
-    txt_files = [f for f in os.listdir(folder_path) if f.endswith('.txt')]
+    # Get a list of all txt files in the specified directory
+    txt_files = [f for f in os.listdir(directory_path) if f.endswith('.txt')]
 
     # Iterate through each txt file
     for file_number, txt_file in enumerate(txt_files, start=1):
-        file_path = os.path.join(folder_path, txt_file)
+        file_path = os.path.join(directory_path, txt_file)
 
         # Load data from the txt file
         with open(file_path, 'r') as file:
@@ -58,15 +60,9 @@ def add_half_cell_data(folder_path):
     return half_cell_dictionary
 
 # Example usage
-#folder_path = "path/to/your/folder"
-#dictionary = add_half_cell_data(folder_path)
-
-cathode_loc = r'C:\Users\Uporabnik\Desktop\package_directory\battery_ocv_decomposition\cathode_data'
-anode_loc = r'C:\Users\Uporabnik\Desktop\package_directory\battery_ocv_decomposition\anode_data'
-
-interpolated_cathodes = add_half_cell_data(cathode_loc)
-interpolated_anodes = add_half_cell_data(anode_loc)
+directory_name = 'battery_ocv_decomposition'
+interpolated_cathodes = add_half_cell_data(directory_name + '/cathode_data')
+interpolated_anodes = add_half_cell_data(directory_name + '/anode_data')
 
 print(interpolated_cathodes)
 print(interpolated_anodes)
-

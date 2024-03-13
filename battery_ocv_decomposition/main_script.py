@@ -1,14 +1,12 @@
-from optimization_functions import perform_full_optimization
 from optimization_functions import perform_full_optimization_parallel
 from add_curves import add_half_cell_data
 from add_battery import load_soc_ocv_data
 
-cathode_loc = r'C:\Users\Uporabnik\Desktop\package_directory\battery_ocv_decomposition\cathode_data'
-anode_loc = r'C:\Users\Uporabnik\Desktop\package_directory\battery_ocv_decomposition\anode_data'
 battery_loc = r'C:\Users\Uporabnik\Desktop\package_directory\battery_ocv_decomposition\battery_data.txt'
 
-interpolated_cathodes = add_half_cell_data(cathode_loc)
-interpolated_anodes = add_half_cell_data(anode_loc)
+directory_name = 'battery_ocv_decomposition'
+interpolated_cathodes = add_half_cell_data(directory_name + '/cathode_data')
+interpolated_anodes = add_half_cell_data(directory_name + '/anode_data')
 SOC_battery, OCV_battery = load_soc_ocv_data(battery_loc)
 
 print(interpolated_cathodes)
