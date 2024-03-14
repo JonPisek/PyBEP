@@ -238,3 +238,5 @@ def perform_full_optimization_parallel(SOC_battery, OCV_battery, interpolated_ca
     print("Overall Best Anode Data ID:", best_anode_data_ID)
     print("Overall Best Parameters:", best_parameters)
     print("Overall Lowest RMSD:", best_optimization_result['RMSD'])
+
+    return best_optimization_result['RMSD']

@@ -34,15 +34,19 @@ class OCVBatteryDecompositionGUI:
         self.run_button = tk.Button(master, text="Run Optimization", command=self.run_optimization, width=20)
         self.run_button.pack(pady=10)
 
+        # Create the label for displaying RMSD value
+        self.result_label = Label(self.master, text="")
+        self.result_label.pack()
+
     def create_file_location_entries(self):
-        self.label_cathode_loc = Label(self.master, text="Cathode File Location:")
+        self.label_cathode_loc = Label(self.master, text="Cathode Folder Location:")
         self.label_cathode_loc.pack()
 
         self.entry_cathode_loc = Entry(self.master, width=50)
         self.entry_cathode_loc.insert(0, self.default_cathode_loc)  # Set default value
         self.entry_cathode_loc.pack()
 
-        self.label_anode_loc = Label(self.master, text="Anode File Location:")
+        self.label_anode_loc = Label(self.master, text="Anode Folder Location:")
         self.label_anode_loc.pack()
 
         self.entry_anode_loc = Entry(self.master, width=50)
@@ -68,7 +72,7 @@ class OCVBatteryDecompositionGUI:
         self.scale_iterations.set(5)  # Set default value
         self.scale_iterations.pack()
 
-        self.label_binary_params = Label(self.master, text="Binary Parameters:")
+        self.label_binary_params = Label(self.master, text="Binary Optimization Parameters:")
         self.label_binary_params.pack()
 
         self.battery_var = IntVar(value=1)
@@ -115,6 +119,9 @@ class OCVBatteryDecompositionGUI:
             iterations=iterations, battery=battery, anode=anode,
             cathode=cathode, derivative_inverse=derivative_inverse
         )
+
+        # Display the RMSD value in the label
+        self.result_label.config(text=f"Overall Lowest RMSD: {result}")
 
 if __name__ == "__main__":
     root = tk.Tk()
