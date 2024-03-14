@@ -60,7 +60,7 @@ def add_half_cell_data(directory_name):
     return half_cell_dictionary
 
 # Example usage
-directory_name = 'battery_ocv_decomposition'
+directory_name = 'data'
 interpolated_cathodes = add_half_cell_data(directory_name + '/cathode_data')
 interpolated_anodes = add_half_cell_data(directory_name + '/anode_data')
 

@@ -24,7 +24,7 @@ def load_soc_ocv_data(txt_file):
     return SOC_battery, OCV_battery
 
 # Example usage:
-#txt_file_path = r'C:\Users\Uporabnik\Desktop\package_directory\battery_ocv_decomposition\battery_data.txt'
-#SOC_battery, OCV_battery = load_soc_ocv_data(txt_file_path)
-#print("SOC_battery:", SOC_battery)
-#print("OCV_battery:", OCV_battery)
+txt_file_path = r'data\battery_data.txt'
+SOC_battery, OCV_battery = load_soc_ocv_data(txt_file_path)
+print("SOC_battery:", SOC_battery)
+print("OCV_battery:", OCV_battery)

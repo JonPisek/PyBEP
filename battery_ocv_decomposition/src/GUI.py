@@ -15,9 +15,9 @@ class OCVBatteryDecompositionGUI:
         master.geometry("800x600")
 
         # Create input file locations with default values
-        self.default_cathode_loc = "battery_ocv_decomposition/cathode_data"
-        self.default_anode_loc = "battery_ocv_decomposition/anode_data"
-        self.default_battery_loc = "battery_ocv_decomposition/battery_data.txt"
+        self.default_cathode_loc = "data/cathode_data"
+        self.default_anode_loc = "data/anode_data"
+        self.default_battery_loc = "data/battery_data.txt"
 
         self.cathode_loc = self.default_cathode_loc
         self.anode_loc = self.default_anode_loc
