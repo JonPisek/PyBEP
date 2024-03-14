@@ -13,4 +13,5 @@ print(interpolated_cathodes)
 print(interpolated_anodes)
 
 # Example usage:
-perform_full_optimization_parallel(SOC_battery, OCV_battery, interpolated_cathodes, interpolated_anodes, iterations=1)
+result = perform_full_optimization_parallel(SOC_battery, OCV_battery, interpolated_cathodes, interpolated_anodes, iterations=1)
+print(result)

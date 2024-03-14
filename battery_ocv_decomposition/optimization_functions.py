@@ -122,7 +122,7 @@ def perform_optimization(cathode_number, cathode_info, anode_number, anode_info,
     derivative_inverse=derivative_inverse
 
     opt_result = differential_evolution(
-        lambda params: optimization(params, anode_interp, anode_x_values, cathode_interp, cathode_x_values,OCV_battery, SOC_battery, battery=battery, cathode=cathode, anode=anode, derivative_inverse=derivative_inverse),
+        lambda params: optimization(params, anode_interp, anode_x_values, cathode_interp, cathode_x_values, OCV_battery, SOC_battery, battery=battery, cathode=cathode, anode=anode, derivative_inverse=derivative_inverse),
         bounds
     )
     
@@ -155,7 +155,8 @@ def perform_full_optimization_parallel(SOC_battery, OCV_battery, interpolated_ca
         Weighting factors for different components of the objective function.
 
     Returns:
-    - None (prints optimization results and plots)
+    - result: dict
+        Dictionary containing optimization results and plots.
     """
     best_optimization_results = []
 
@@ -218,25 +219,22 @@ def perform_full_optimization_parallel(SOC_battery, OCV_battery, interpolated_ca
         afullscalesoc = x_a1_ns - min(x_a1)
         a_SOC_full = afullscalesoc / max(ascalesoc)
 
-        plt.figure(figsize=(8, 6))
-        plt.plot(SOC_battery, OCV_battery, 'r-', label='Measured battery OCV')
-        plt.plot(SOC_battery, calculated_battery_OCV_opt, 'b-', label='Optimized Battery OCV')
-        plt.plot(c_SOC_full, r1_ns(x_c1_ns), 'r--')
-        plt.plot(c_SOC, r1(x_c1), 'g-', label='Optimized Cathode OCP')
-        plt.plot(a_SOC_full, w1_ns(x_a1_ns), 'r--')
-        plt.plot(a_SOC, w1(x_a1), 'k-', label='Optimized Anode OCP')
-        plt.title("Optimization")
-        plt.xlabel('SOC (% / 100)')
-        plt.ylabel('OCV (V)')
-        plt.grid(True)
-        plt.legend()
-        plt.show()
-    else:
-        print("Interpolation for the best cathode or anode failed.")
+    result = {
+        'Overall Best Cathode Data ID': best_cathode_data_ID,
+        'Overall Best Anode Data ID': best_anode_data_ID,
+        'Overall Best Parameters': best_parameters,
+        'Overall Lowest RMSD': best_optimization_result['RMSD'],
+        'SOC_battery': SOC_battery,
+        'OCV_battery': OCV_battery,
+        'calculated_battery_OCV_opt': calculated_battery_OCV_opt,
+        'c_SOC_full': c_SOC_full,
+        'r1_ns_x_c1_ns': r1_ns(x_c1_ns),
+        'c_SOC': c_SOC,
+        'r1_x_c1': r1(x_c1),
+        'a_SOC_full': a_SOC_full,
+        'w1_ns_x_a1_ns': w1_ns(x_a1_ns),
+        'a_SOC': a_SOC,
+        'w1_x_a1': w1(x_a1)
+    }
 
-    print("Overall Best Cathode Data ID:", best_cathode_data_ID)
-    print("Overall Best Anode Data ID:", best_anode_data_ID)
-    print("Overall Best Parameters:", best_parameters)
-    print("Overall Lowest RMSD:", best_optimization_result['RMSD'])
-
-    return best_optimization_result['RMSD']
+    return result
