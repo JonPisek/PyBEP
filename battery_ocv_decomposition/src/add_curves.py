@@ -2,9 +2,10 @@ import os
 from scipy.interpolate import interp1d
 import numpy as np
 
+
 def add_half_cell_data(directory_name):
     """
-    Add half-cell data from text files in the specified directory to a dictionary.
+    Add half-cell data from text files in the specified path to a dictionary.
 
     Parameters:
     - directory_name (str): The directory name containing text files with data.
@@ -28,7 +29,7 @@ def add_half_cell_data(directory_name):
     txt_files = [f for f in os.listdir(directory_path) if f.endswith('.txt')]
 
     # Iterate through each txt file
-    for file_number, txt_file in enumerate(txt_files, start=1):
+    for txt_file in txt_files:
         file_path = os.path.join(directory_path, txt_file)
 
         # Load data from the txt file
@@ -36,7 +37,8 @@ def add_half_cell_data(directory_name):
             lines = file.readlines()
 
         # Extract x and y values from the file
-        x_values, y_values = zip(*[map(float, line.strip().split()) for line in lines])
+        x_y_pairs = [map(float, line.strip().split()) for line in lines]
+        x_values, y_values = zip(*x_y_pairs)
 
         # Check if x values are in increasing order
         if all(x > y for x, y in zip(x_values, x_values[1:])):
@@ -45,11 +47,13 @@ def add_half_cell_data(directory_name):
             y_values = y_values[::-1]
 
         # Interpolate the OCP function
-        interpolated_function = interp1d(x_values, y_values, kind='cubic', fill_value='extrapolate')
+        interpolated_function = interp1d(
+            x_values, y_values, kind='cubic', fill_value='extrapolate'
+        )
 
         # Create a new dataset
         new_dataset = {
-            'ID_number': file_number,
+            'ID_number': os.path.splitext(txt_file)[0],
             'x_values': np.array(x_values),
             'interpolated_function': interpolated_function
         }
@@ -59,10 +63,10 @@ def add_half_cell_data(directory_name):
 
     return half_cell_dictionary
 
+
 # Example usage
-directory_name = 'data'
-interpolated_cathodes = add_half_cell_data(directory_name + '/cathode_data')
-interpolated_anodes = add_half_cell_data(directory_name + '/anode_data')
+interpolated_cathodes = add_half_cell_data('data/cathode_data')
+interpolated_anodes = add_half_cell_data('data/anode_data')
 
 print(interpolated_cathodes)
 print(interpolated_anodes)

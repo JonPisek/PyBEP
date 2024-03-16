@@ -1,8 +1,9 @@
 import numpy as np
 
+
 def load_soc_ocv_data(txt_file):
     """
-    Load State of Charge (SOC) and Open Circuit Voltage (OCV) data from a txt file.
+    Load SOC and OCV data from a txt file.
 
     Parameters:
     - txt_file (str): Path to the txt file containing SOC and OCV data.
@@ -15,13 +16,15 @@ def load_soc_ocv_data(txt_file):
         lines = file.readlines()
 
     # Extract x and y values from the file
-    SOC_battery, OCV_battery = zip(*[map(float, line.strip().split()) for line in lines])
+    data_pairs = [map(float, line.strip().split()) for line in lines]
+    SOC_battery, OCV_battery = zip(*data_pairs)
 
     # Convert to NumPy arrays
     SOC_battery = np.array(SOC_battery)
     OCV_battery = np.array(OCV_battery)
 
     return SOC_battery, OCV_battery
+
 
 # Example usage:
 txt_file_path = r'data\battery_data.txt'
