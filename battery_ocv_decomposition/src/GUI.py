@@ -1,5 +1,7 @@
 import tkinter as tk
-from tkinter import Label, Entry, filedialog, IntVar, Checkbutton, Scale
+from tkinter import Label, Entry, filedialog, IntVar, Checkbutton, Scale, Button  # noqa: E501
+from PIL import Image, ImageTk
+from optimization_functions import perform_full_optimization_parallel_to_json_GUI  # noqa: E501
 from optimization_functions import perform_full_optimization_parallel
 from add_curves import add_half_cell_data
 from add_battery import load_soc_ocv_data
@@ -11,7 +13,7 @@ class OCVBatteryDecompositionGUI:
     def __init__(self, master):
         self.master = master
         master.title("OCV Battery Decomposition")
-        master.geometry("800x600")
+        master.geometry("1400x800")
         self.default_cathode_loc = "data/cathode_data"
         self.default_anode_loc = "data/anode_data"
         self.default_battery_loc = "data/battery_data.txt"
@@ -22,7 +24,7 @@ class OCVBatteryDecompositionGUI:
         self.interpolated_anodes = add_half_cell_data(self.anode_loc)
         self.SOC_battery = None
         self.OCV_battery = None
-        self.left_frame = tk.Frame(master)
+        self.left_frame = tk.Frame(master, width=400)
         self.left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.right_frame = tk.Frame(master)
         self.right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -32,36 +34,49 @@ class OCVBatteryDecompositionGUI:
             self.left_frame, text="Run Optimization",
             command=self.run_optimization, width=20)
         self.run_button.pack(pady=10)
-        self.result_label = Label(self.right_frame, text="")
-        self.result_label.pack()
-        self.plot = None
+        self.download_button = Button(
+            self.left_frame, text="Download Result",
+            command=self.download_result, width=20)
+        self.result_label = None
+        self.plot = self.create_empty_plot()
+        self.plot.get_tk_widget().pack(
+            side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.add_image()
 
     def create_file_location_entries(self):
         self.label_cathode_loc = Label(
-            self.left_frame, text="Cathode Folder Location:")
+            self.left_frame, text="Cathode Folder Location:",
+            font=("Arial", 12))
         self.label_cathode_loc.pack()
-        self.entry_cathode_loc = Entry(self.left_frame, width=50)
+        self.entry_cathode_loc = Entry(self.left_frame, width=50,
+                                       font=("Arial", 12))
         self.entry_cathode_loc.insert(0, self.default_cathode_loc)
         self.entry_cathode_loc.pack()
         self.label_anode_loc = Label(
-            self.left_frame, text="Anode Folder Location:")
+            self.left_frame, text="Anode Folder Location:",
+            font=("Arial", 12))
         self.label_anode_loc.pack()
-        self.entry_anode_loc = Entry(self.left_frame, width=50)
+        self.entry_anode_loc = Entry(self.left_frame, width=50,
+                                     font=("Arial", 12))
         self.entry_anode_loc.insert(0, self.default_anode_loc)
         self.entry_anode_loc.pack()
         self.label_battery_loc = Label(
-            self.left_frame, text="Battery File Location:")
+            self.left_frame, text="Battery File Location:",
+            font=("Arial", 12))
         self.label_battery_loc.pack()
-        self.entry_battery_loc = Entry(self.left_frame, width=50)
+        self.entry_battery_loc = Entry(self.left_frame, width=50,
+                                       font=("Arial", 12))
         self.entry_battery_loc.insert(0, self.default_battery_loc)
         self.entry_battery_loc.pack()
         self.browse_button = tk.Button(
-            self.left_frame, text="Browse", command=self.browse_files)
+            self.left_frame, text="Browse", command=self.browse_files,
+            font=("Arial", 12))
         self.browse_button.pack()
 
     def create_input_widgets(self):
         self.label_iterations = Label(
-            self.left_frame, text="Iterations:")
+            self.left_frame, text="Iterations:",
+            font=("Arial", 12))
         self.label_iterations.pack()
         self.iterations_var = IntVar()
         self.scale_iterations = Scale(
@@ -70,7 +85,8 @@ class OCVBatteryDecompositionGUI:
         self.scale_iterations.set(5)
         self.scale_iterations.pack()
         self.label_binary_params = Label(
-            self.left_frame, text="Binary Optimization Parameters:")
+            self.left_frame, text="Binary Optimization Parameters:",
+            font=("Arial", 12))
         self.label_binary_params.pack()
         self.battery_var = IntVar(value=1)
         self.check_battery = Checkbutton(
@@ -131,9 +147,32 @@ class OCVBatteryDecompositionGUI:
                 f"Best Parameters: {result['Best Parameters']}\n"
                 f"Lowest RMSD: {result['Lowest RMSD']}"
             )
-            self.result_label.config(text=data_label_text)  # Update the text
+            if self.result_label:
+                self.result_label.destroy()
+            self.result_label = Label(self.left_frame, text=data_label_text,
+                                      font=("Arial", 12))
+            self.result_label.pack(pady=10)
+            self.download_button.pack_forget()
+            self.download_button.pack(pady=10)
         else:
             print("Interpolation for the best cathode or anode failed.")
+
+    def download_result(self):
+        result_filename = filedialog.asksaveasfilename(
+            defaultextension=".json",
+            filetypes=[("JSON files", "*.json")])
+        if result_filename:
+            perform_full_optimization_parallel_to_json_GUI(
+                result_filename, self.SOC_battery, self.OCV_battery,
+                self.interpolated_cathodes, self.interpolated_anodes,
+                iterations=self.iterations_var.get(),
+                battery=self.battery_var.get(),
+                anode=self.anode_var.get(),
+                cathode=self.cathode_var.get(),
+                derivative_inverse=self.derivative_var.get()
+            )
+            print("Result downloaded successfully.")
+            self.download_button.pack_forget()
 
     def plot_results(self, result):
         if self.plot is None:
@@ -168,6 +207,18 @@ class OCVBatteryDecompositionGUI:
         plt.ylabel('OCV (V)')
         plt.grid(True)
         plt.legend()
+
+    def create_empty_plot(self):
+        empty_fig = plt.figure(figsize=(8, 6))
+        empty_plot = FigureCanvasTkAgg(empty_fig, master=self.right_frame)
+        return empty_plot
+
+    def add_image(self):
+        img = Image.open("LICEM/logo.jpg")
+        photo = ImageTk.PhotoImage(img)
+        img_label = Label(self.left_frame, image=photo)
+        img_label.image = photo
+        img_label.pack(side=tk.BOTTOM, padx=10, pady=10)
 
 
 if __name__ == "__main__":
