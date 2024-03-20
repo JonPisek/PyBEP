@@ -5,6 +5,32 @@ from joblib import Parallel, delayed
 import json
 
 
+def calculate_derivative_and_inverse(x, y):
+    """
+    Calculate the derivative and its inverse.
+
+    Parameters:
+        x (array-like): Array of x-values.
+        y (array-like): Array of y-values.
+
+    Returns:
+        tuple: A tuple containing four arrays:
+            - xd: The original x-values.
+            - yd: The derivative of y with respect to x.
+            - xi: The original x-values (same as xd).
+            - yi: The reciprocal of the derivative (1/yd).
+    """
+    # Calculate the derivative using numpy.gradient
+    xd = x
+    yd = np.gradient(y, x)
+
+    # Calculate the reciprocal of the derivative
+    xi = xd
+    yi = 1 / yd
+
+    return xd, yd, xi, yi
+
+
 def calculate_inverse_derivative(x, y):
     """
     Calculate the inverse of the derivative of a function.
@@ -26,7 +52,7 @@ def calculate_inverse_derivative(x, y):
 
 def optimization(params, anode_interp, anode_x_values, cathode_interp,
                  cathode_x_values, OCV_battery, SOC_battery, battery=1,
-                 cathode=0, anode=0, derivative_inverse=0):
+                 derivative_inverse=0):
     """
     Objective function for optimization.
 
@@ -46,7 +72,7 @@ def optimization(params, anode_interp, anode_x_values, cathode_interp,
         Measured battery open-circuit voltage (OCV).
     - SOC_battery: array-like
         State of charge (SOC) values for the battery.
-    - battery, cathode, anode, derivative_inverse: float, optional
+    - battery, derivative_inverse: float, optional
         Weighting factors for different components of the objective function.
 
     Returns:
@@ -76,8 +102,6 @@ def optimization(params, anode_interp, anode_x_values, cathode_interp,
     r = interp1d(cxv[g:h], q[g:h], kind='cubic', fill_value='extrapolate')
     x_c = np.linspace(cxv[g:h][0], cxv[g:h][-1], 1001)
 
-    anode_calculated = r(x_c) - OCV_battery
-    cathode_calculated = w(x_a) + OCV_battery
     calculated_battery_OCV = r(x_c) - w(x_a)
 
     calculated_battery_OCV_d_in = calculate_inverse_derivative(
@@ -89,10 +113,6 @@ def optimization(params, anode_interp, anode_x_values, cathode_interp,
 
     RMSD = battery * np.sqrt(
             np.mean((calculated_battery_OCV - OCV_battery) ** 2)) \
-        + anode * np.sqrt(
-            np.mean((anode_calculated - w(x_a)) ** 2)) \
-        + cathode * np.sqrt(
-            np.mean((cathode_calculated - r(x_c)) ** 2)) \
         + derivative_inverse * np.sqrt(
             np.mean((calculated_battery_OCV_d_in - OCV_battery_d_in) ** 2))
     return RMSD
@@ -100,7 +120,7 @@ def optimization(params, anode_interp, anode_x_values, cathode_interp,
 
 def perform_optimization(cathode_number, cathode_info, anode_number,
                          anode_info, OCV_battery, SOC_battery, battery,
-                         cathode, anode, derivative_inverse):
+                         derivative_inverse):
     """
     Perform optimization for a specific cathode and anode combination.
 
@@ -135,15 +155,12 @@ def perform_optimization(cathode_number, cathode_info, anode_number,
     bounds = [(0, 1), (0, 1), (0, 1), (0, 1)]
 
     battery = battery
-    cathode = cathode
-    anode = anode
     derivative_inverse = derivative_inverse
 
     opt_result = differential_evolution(
         lambda params: optimization(params, anode_interp, anode_x_values,
                                     cathode_interp, cathode_x_values,
                                     OCV_battery, SOC_battery, battery=battery,
-                                    cathode=cathode, anode=anode,
                                     derivative_inverse=derivative_inverse),
         bounds
     )
@@ -161,8 +178,7 @@ def perform_optimization(cathode_number, cathode_info, anode_number,
 def perform_full_optimization_parallel(SOC_battery, OCV_battery,
                                        interpolated_cathodes,
                                        interpolated_anodes, iterations=5,
-                                       battery=1, cathode=0, anode=0,
-                                       derivative_inverse=0):
+                                       battery=1, derivative_inverse=0):
     """
     Perform parallelized full optimization for multiple iterations
     and find the overall best optimization result.
@@ -178,7 +194,7 @@ def perform_full_optimization_parallel(SOC_battery, OCV_battery,
         Dictionary containing information about interpolated anode functions.
     - iterations: int, optional
         Number of iterations for optimization.
-    - battery, anode, cathode, derivative_inverse: float, optional
+    - battery, derivative_inverse: float, optional
         Weighting factors for different components of the objective function.
 
     Returns:
@@ -194,7 +210,7 @@ def perform_full_optimization_parallel(SOC_battery, OCV_battery,
                 cathode_number, cathode_info, anode_number, anode_info):
             return perform_optimization(cathode_number, cathode_info,
                                         anode_number, anode_info, OCV_battery,
-                                        SOC_battery, battery, cathode, anode,
+                                        SOC_battery, battery,
                                         derivative_inverse)
 
         optimization_results = Parallel(n_jobs=-1)(
@@ -292,8 +308,7 @@ def perform_full_optimization_parallel_to_json_GUI(filename, SOC_battery,
                                                    interpolated_cathodes,
                                                    interpolated_anodes,
                                                    iterations=5,
-                                                   battery=1, cathode=0,
-                                                   anode=0,
+                                                   battery=1,
                                                    derivative_inverse=0):
     """
     Perform parallelized full optimization for multiple iterations
@@ -312,7 +327,7 @@ def perform_full_optimization_parallel_to_json_GUI(filename, SOC_battery,
         Dictionary containing information about interpolated anode functions.
     - iterations: int, optional
         Number of iterations for optimization.
-    - battery, anode, cathode, derivative_inverse: float, optional
+    - battery, derivative_inverse: float, optional
         Weighting factors for different components of the objective function.
 
     Returns:
@@ -327,7 +342,7 @@ def perform_full_optimization_parallel_to_json_GUI(filename, SOC_battery,
                 cathode_number, cathode_info, anode_number, anode_info):
             return perform_optimization(cathode_number, cathode_info,
                                         anode_number, anode_info, OCV_battery,
-                                        SOC_battery, battery, cathode, anode,
+                                        SOC_battery, battery,
                                         derivative_inverse)
 
         optimization_results = Parallel(n_jobs=-1)(
@@ -440,7 +455,7 @@ def perform_full_optimization_parallel_to_json(filename, file_location,
                                                interpolated_cathodes,
                                                interpolated_anodes,
                                                iterations=5,
-                                               battery=1, cathode=0, anode=0,
+                                               battery=1,
                                                derivative_inverse=0):
     """
     Perform parallelized full optimization for multiple iterations
@@ -461,7 +476,7 @@ def perform_full_optimization_parallel_to_json(filename, file_location,
         Dictionary containing information about interpolated anode functions.
     - iterations: int, optional
         Number of iterations for optimization.
-    - battery, anode, cathode, derivative_inverse: float, optional
+    - battery, derivative_inverse: float, optional
         Weighting factors for different components of the objective function.
 
     Returns:
@@ -476,7 +491,7 @@ def perform_full_optimization_parallel_to_json(filename, file_location,
                 cathode_number, cathode_info, anode_number, anode_info):
             return perform_optimization(cathode_number, cathode_info,
                                         anode_number, anode_info, OCV_battery,
-                                        SOC_battery, battery, cathode, anode,
+                                        SOC_battery, battery,
                                         derivative_inverse)
 
         optimization_results = Parallel(n_jobs=-1)(
