@@ -61,7 +61,7 @@ This is an example of how to list things you need to use the software and how to
 
 
 <!-- USAGE EXAMPLES -->
-## Usage of the GUI
+## Using the GUI
 
 To utilize the GUI, simply run the `GUI.py` script, and you will be greeted with the following interface:
 
