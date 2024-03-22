@@ -66,7 +66,7 @@ This is an example of how to list things you need to use the software and how to
 To utilize the GUI, simply run the `GUI.py` script, and you will be greeted with the following interface:
 
 <div align="center">
-    <img src="LICEM/GUI_open.jpg" alt="GUI Screenshot" width="600" height="250">
+    <img src="LICEM/GUI_open.jpg" alt="GUI Screenshot" width="1400" height="850">
 </div>
 
 The process is straightforward, explained from top to bottom:
@@ -82,7 +82,7 @@ The process is straightforward, explained from top to bottom:
 Once you've defined all parameters, click "Run Optimization" to initiate the optimization process. After completion, you will see the calculated results:
 
 <div align="center">
-    <img src="LICEM/run_opt.jpg" alt="Optimization Results" width="600" height="250">
+    <img src="LICEM/run_opt.jpg" alt="Optimization Results" width="1400" height="850">
 </div>
 
 The GUI displays the name of the TXT file with the best cathode, best anode, parameters (e, f, g, h in that order), and the lowest calculated RMSD value. It also plots the results using Matplotlib.
