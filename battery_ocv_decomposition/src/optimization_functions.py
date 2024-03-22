@@ -20,11 +20,8 @@ def calculate_derivative_and_inverse(x, y):
             - xi: The original x-values (same as xd).
             - yi: The reciprocal of the derivative (1/yd).
     """
-    # Calculate the derivative using numpy.gradient
     xd = x
     yd = np.gradient(y, x)
-
-    # Calculate the reciprocal of the derivative
     xi = xd
     yi = 1 / yd
 
@@ -414,7 +411,6 @@ def perform_full_optimization_parallel_to_json_GUI(filename, SOC_battery,
         afullscalesoc = x_a1_ns - min(x_a1)
         a_SOC_full = afullscalesoc / max(ascalesoc)
 
-    # Convert NumPy arrays to Python lists
     SOC_battery_list = SOC_battery.tolist()
     OCV_battery_list = OCV_battery.tolist()
     calculated_battery_OCV_opt_list = calculated_battery_OCV_opt.tolist()
@@ -563,7 +559,6 @@ def perform_full_optimization_parallel_to_json(filename, file_location,
         afullscalesoc = x_a1_ns - min(x_a1)
         a_SOC_full = afullscalesoc / max(ascalesoc)
 
-    # Convert NumPy arrays to Python lists
     SOC_battery_list = SOC_battery.tolist()
     OCV_battery_list = OCV_battery.tolist()
     calculated_battery_OCV_opt_list = calculated_battery_OCV_opt.tolist()
