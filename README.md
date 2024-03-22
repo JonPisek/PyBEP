@@ -23,7 +23,7 @@ When considering cathode and anode Open Circuit Potential (OCP) curves, obtainin
 For better clarity, consider the following illustration:
 
 <div align="center">
-    <img src="LICEM/optimization_exp.jpg" alt="Optimization Example" width="500" height="400">
+    <img src="LICEM/optimization_exp.jpg" alt="Optimization Example" width="500" height="350">
 </div>
 
 For instance, if we have an array of 1001 anode OCP values, parameters e = 8 and f = 701 indicate that the 8th value in that array corresponds to SOC battery = 0, and the 701st value corresponds to battery SOC = 1.
@@ -66,7 +66,7 @@ This is an example of how to list things you need to use the software and how to
 To utilize the GUI, simply run the `GUI.py` script, and you will be greeted with the following interface:
 
 <div align="center">
-    <img src="LICEM/GUI_open.jpg" alt="GUI Screenshot" width="600" height="400">
+    <img src="LICEM/GUI_open.jpg" alt="GUI Screenshot" width="600" height="250">
 </div>
 
 The process is straightforward, explained from top to bottom:
@@ -82,7 +82,7 @@ The process is straightforward, explained from top to bottom:
 Once you've defined all parameters, click "Run Optimization" to initiate the optimization process. After completion, you will see the calculated results:
 
 <div align="center">
-    <img src="LICEM/run_opt.jpg" alt="Optimization Results" width="600" height="400">
+    <img src="LICEM/run_opt.jpg" alt="Optimization Results" width="600" height="250">
 </div>
 
 The GUI displays the name of the TXT file with the best cathode, best anode, parameters (e, f, g, h in that order), and the lowest calculated RMSD value. It also plots the results using Matplotlib.
