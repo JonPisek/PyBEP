@@ -32,41 +32,54 @@ For instance, if we have an array of 1001 anode OCP values, parameters e = 8 and
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Thank you for choosing our project! Follow the simple steps below to get started with the package:
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+Before installing the package, ensure you have the following prerequisites:
+
+* Python 3.8 or higher
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repository:
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/JonPisek/package_directory.git
    ```
-3. Install NPM packages
+   Alternatively, you can download the repository as a ZIP file and extract it to your desired location.
+
+2. Navigate to the project directory:
    ```sh
-   npm install
+   cd package_directory
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
+
+3. Install the package using `pip`:
+   ```sh
+   pip install .
    ```
+
+### Usage
+
+Once installed, you can easily launch the GUI for battery OCV decomposition:
+
+1. Open a terminal or command prompt.
+2. Navigate to the project directory if you haven't already.
+3. Run the following command to launch the GUI:
+   ```sh
+   run_battery_OCV_decomposition
+   ```
+   This command will open the GUI interface, allowing you to perform battery OCV decomposition effortlessly.
+
+That's it! You're now ready to use battery_OCV_decomposition for battery OCV decomposition analysis.
 
 
 <!-- USAGE EXAMPLES -->
 ## Using the GUI
 
-To utilize the GUI, simply run the `GUI.py` script, and you will be greeted with the following interface:
+Using the GUI, you will be greeted with the following interface:
 
 <div align="center">
-    <img src="LICEM/GUI_open.jpg" alt="GUI Screenshot" width="600" height="250">
+    <img src="LICEM/GUI_open.jpg" alt="GUI Screenshot" width="1000" height="300">
 </div>
 
 The process is straightforward, explained from top to bottom:
@@ -82,7 +95,7 @@ The process is straightforward, explained from top to bottom:
 Once you've defined all parameters, click "Run Optimization" to initiate the optimization process. After completion, you will see the calculated results:
 
 <div align="center">
-    <img src="LICEM/run_opt.jpg" alt="Optimization Results" width="600" height="250">
+    <img src="LICEM/run_opt.jpg" alt="Optimization Results" width="1000" height="300">
 </div>
 
 The GUI displays the name of the TXT file with the best cathode, best anode, parameters (e, f, g, h in that order), and the lowest calculated RMSD value. It also plots the results using Matplotlib.
@@ -105,9 +118,9 @@ If you have a suggestion that would make this better, please fork the repo and c
 Don't forget to give the project a star! Thanks again!
 
 1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
+2. Create your Feature Branch
+3. Commit your Changes
+4. Push to the Branch
 5. Open a Pull Request
 
 
