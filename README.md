@@ -23,7 +23,7 @@ When considering cathode and anode Open Circuit Potential (OCP) curves, obtainin
 For better clarity, consider the following illustration:
 
 <div align="center">
-    <img src="LICEM/optimization_exp.jpg" alt="Optimization Example" width="500" height="350">
+    <img src="LICEM/optimization_exp.jpg" alt="Optimization Example" width="500" height="400">
 </div>
 
 For instance, if we have an array of 1001 anode OCP values, parameters e = 8 and f = 701 indicate that the 8th value in that array corresponds to SOC battery = 0, and the 701st value corresponds to battery SOC = 1.
