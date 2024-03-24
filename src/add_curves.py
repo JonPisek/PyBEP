@@ -65,8 +65,7 @@ def add_half_cell_data(directory_name):
 
 
 # Example usage
-interpolated_cathodes = add_half_cell_data('data/cathode_data')
-interpolated_anodes = add_half_cell_data('data/anode_data')
-
-print(interpolated_cathodes)
-print(interpolated_anodes)
+# interpolated_cathodes = add_half_cell_data('data/cathode_data')
+# interpolated_anodes = add_half_cell_data('data/anode_data')
+# print(interpolated_cathodes)
+# print(interpolated_anodes)

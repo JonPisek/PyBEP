@@ -27,7 +27,7 @@ def load_soc_ocv_data(txt_file):
 
 
 # Example usage:
-txt_file_path = r'data\battery_data.txt'
-SOC_battery, OCV_battery = load_soc_ocv_data(txt_file_path)
-print("SOC_battery:", SOC_battery)
-print("OCV_battery:", OCV_battery)
+# txt_file_path = r'data\battery_data.txt'
+# SOC_battery, OCV_battery = load_soc_ocv_data(txt_file_path)
+# print("SOC_battery:", SOC_battery)
+# print("OCV_battery:", OCV_battery)
