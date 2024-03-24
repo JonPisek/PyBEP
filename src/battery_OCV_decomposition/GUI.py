@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import Label, Entry, filedialog, IntVar, Scale, Button, DoubleVar
-from PIL import Image, ImageTk
 from optimization_functions import perform_full_optimization_parallel_to_json_GUI  # noqa: E501
 from optimization_functions import perform_full_optimization_parallel
 from add_curves import add_half_cell_data
@@ -13,7 +12,10 @@ class OCVBatteryDecompositionGUI:
     def __init__(self, master):
         self.master = master
         master.title("OCV Battery Decomposition")
-        master.geometry("1400x850")
+        screen_width = master.winfo_screenwidth()
+        screen_height = master.winfo_screenheight()
+        font_size = int(screen_height / 50)
+        master.geometry(f"{int(screen_width)}x{int(screen_height)}")
         self.default_cathode_loc = "data/cathode_data"
         self.default_anode_loc = "data/anode_data"
         self.default_battery_loc = "data/battery_data.txt"
@@ -25,90 +27,94 @@ class OCVBatteryDecompositionGUI:
         self.SOC_battery = None
         self.OCV_battery = None
         self.dark_mode = False
-        self.left_frame = tk.Frame(master, width=400, bg="white")
+        self.left_frame = tk.Frame(master, width=screen_width, bg="white")
         self.left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.right_frame = tk.Frame(master)
         self.right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.create_file_location_entries()
-        self.create_input_widgets()
+        self.create_file_location_entries(font_size)
+        self.create_input_widgets(font_size)
         self.run_button = tk.Button(
             self.left_frame, text="Run Optimization",
-            command=self.run_optimization, width=20)
+            command=lambda: self.run_optimization(font_size),
+            width=int(font_size),
+            font=("Arial", int(font_size*0.8)))
         self.run_button.pack(pady=10)
         self.download_button = Button(
             self.left_frame, text="Download Result",
-            command=self.download_result, width=20)
+            command=self.download_result, width=int(font_size),
+            font=("Arial", int(font_size*0.8)))
         self.result_label = None
         self.plot = self.create_empty_plot()
         self.plot.get_tk_widget().pack(
             side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.add_image()
-        self.add_theme_switch()
+        self.add_logo(font_size)
+        self.add_theme_switch(font_size)
 
-    def create_file_location_entries(self):
+    def create_file_location_entries(self, font_size):
         self.label_cathode_loc = Label(
             self.left_frame, text="Cathode Folder Location:",
-            font=("Arial", 12), bg="white")
+            font=("Arial", int(font_size*0.8)), bg="white")
         self.label_cathode_loc.pack()
-        self.entry_cathode_loc = Entry(self.left_frame, width=50,
-                                       font=("Arial", 12))
+        self.entry_cathode_loc = Entry(self.left_frame, width=font_size*3,
+                                       font=("Arial", int(font_size*0.8)))
         self.entry_cathode_loc.insert(0, self.default_cathode_loc)
         self.entry_cathode_loc.pack()
         self.label_anode_loc = Label(
             self.left_frame, text="Anode Folder Location:",
-            font=("Arial", 12), bg="white")
+            font=("Arial", int(font_size*0.8)), bg="white")
         self.label_anode_loc.pack()
-        self.entry_anode_loc = Entry(self.left_frame, width=50,
-                                     font=("Arial", 12))
+        self.entry_anode_loc = Entry(self.left_frame, width=font_size*3,
+                                     font=("Arial", int(font_size*0.8)))
         self.entry_anode_loc.insert(0, self.default_anode_loc)
         self.entry_anode_loc.pack()
         self.label_battery_loc = Label(
             self.left_frame, text="Battery File Location:",
-            font=("Arial", 12), bg="white")
+            font=("Arial", int(font_size*0.8)), bg="white")
         self.label_battery_loc.pack()
-        self.entry_battery_loc = Entry(self.left_frame, width=50,
-                                       font=("Arial", 12))
+        self.entry_battery_loc = Entry(self.left_frame, width=font_size*3,
+                                       font=("Arial", int(font_size*0.8)))
         self.entry_battery_loc.insert(0, self.default_battery_loc)
         self.entry_battery_loc.pack()
         self.browse_button = tk.Button(
             self.left_frame, text="Browse", command=self.browse_files,
-            font=("Arial", 12))
+            width=int(font_size*0.8),
+            font=("Arial", int(font_size*0.8)))
         self.browse_button.pack()
 
-    def create_input_widgets(self):
+    def create_input_widgets(self, font_size):
         self.iterations_frame = tk.Frame(self.left_frame, bg="white")
-        self.iterations_frame.pack(pady=(10, 0), padx=10, fill=tk.X)
+        self.iterations_frame.pack(pady=(0, 0), padx=0, fill=tk.X)
         self.label_iterations = Label(
             self.iterations_frame, text="Iterations:",
-            font=("Arial", 12), bg="white")
+            font=("Arial", int(font_size*0.8)), bg="white")
         self.label_iterations.pack()
         self.iterations_var = IntVar()
         self.scale_iterations = Scale(
             self.iterations_frame, from_=1, to=5, orient=tk.HORIZONTAL,
-            variable=self.iterations_var, length=200)
+            variable=self.iterations_var, length=font_size*15)
         self.scale_iterations.set(1)
         self.scale_iterations.pack()
         self.battery_frame = tk.Frame(self.left_frame, bg="white")
-        self.battery_frame.pack(pady=(10, 0), padx=10, fill=tk.X)
+        self.battery_frame.pack(pady=(0, 0), padx=0, fill=tk.X)
         self.label_battery = Label(
             self.battery_frame, text="Battery weight:",
-            font=("Arial", 12), bg="white")
+            font=("Arial", int(font_size*0.8)), bg="white")
         self.label_battery.pack()
         self.battery_var = DoubleVar(value=1)
         self.scale_battery = Scale(
             self.battery_frame, from_=0, to=1, orient=tk.HORIZONTAL,
-            variable=self.battery_var, length=200, resolution=0.2)
+            variable=self.battery_var, length=font_size*15, resolution=0.2)
         self.scale_battery.pack()
         self.derivative_frame = tk.Frame(self.left_frame, bg="white")
-        self.derivative_frame.pack(pady=(10, 0), padx=10, fill=tk.X)
+        self.derivative_frame.pack(pady=(0, 0), padx=0, fill=tk.X)
         self.label_derivative = Label(
             self.derivative_frame, text="Differential capacity weight:",
-            font=("Arial", 12), bg="white")
+            font=("Arial", int(font_size*0.8)), bg="white")
         self.label_derivative.pack()
         self.derivative_var = DoubleVar(value=0)
         self.scale_derivative = Scale(
             self.derivative_frame, from_=0, to=1, orient=tk.HORIZONTAL,
-            variable=self.derivative_var, length=200, resolution=0.2)
+            variable=self.derivative_var, length=font_size*15, resolution=0.2)
         self.scale_derivative.pack()
 
     def browse_files(self):
@@ -119,7 +125,7 @@ class OCVBatteryDecompositionGUI:
             current_entry.delete(0, tk.END)
             current_entry.insert(0, file_path)
 
-    def run_optimization(self):
+    def run_optimization(self, font_size):
         iterations = self.iterations_var.get()
         battery = self.battery_var.get()
         derivative_inverse = self.derivative_var.get()
@@ -153,7 +159,7 @@ class OCVBatteryDecompositionGUI:
             if self.result_label:
                 self.result_label.destroy()
             self.result_label = Label(self.left_frame, text=data_label_text,
-                                      font=("Arial", 12))
+                                      font=("Arial", font_size))
             self.result_label.pack(pady=10)
             self.download_button.pack_forget()
             self.download_button.pack(pady=10)
@@ -214,12 +220,37 @@ class OCVBatteryDecompositionGUI:
         empty_plot = FigureCanvasTkAgg(empty_fig, master=self.right_frame)
         return empty_plot
 
-    def add_image(self):
-        img = Image.open("LICEM/logo.jpg")
-        photo = ImageTk.PhotoImage(img)
-        img_label = Label(self.left_frame, image=photo)
-        img_label.image = photo
-        img_label.pack(side=tk.BOTTOM, padx=10, pady=10)
+    def add_logo(self, font_size):
+        canvas = tk.Canvas(self.left_frame, width=font_size*20,
+                           height=font_size*10, bg="#FFFFFF")
+        canvas.pack(side=tk.BOTTOM, padx=0, pady=0)
+        text = "LICeM"
+        text_color = "#2C2F33"
+        underline_color = "#55acee"
+        underline_thickness = int(font_size/2)
+        text_width = len(text) * font_size*2
+        x_pos = (canvas.winfo_width() - text_width) // 2\
+            + text_width - 2 * font_size
+        y_pos = int(font_size * 4.8)
+        canvas.create_line(x_pos - font_size,
+                           y_pos + font_size*3,
+                           x_pos + text_width + font_size * 6,
+                           y_pos + font_size*3,
+                           fill=underline_color,
+                           width=underline_thickness)
+
+        for letter in text:
+            if letter == "e":
+                x_pos += font_size
+                canvas.create_text(x_pos, y_pos, text=letter,
+                                   font=("Arial", font_size*4),
+                                   fill=underline_color)
+                x_pos += font_size
+            else:
+                canvas.create_text(x_pos, y_pos, text=letter,
+                                   font=("Arial", font_size*4),
+                                   fill=text_color)
+            x_pos += font_size*3
 
     def toggle_theme(self):
         self.dark_mode = not self.dark_mode
@@ -244,13 +275,15 @@ class OCVBatteryDecompositionGUI:
                                   fg="black" if self.dark_mode else "black")
         self.master.config(bg="#2C2F33" if self.dark_mode else "white")
 
-    def add_theme_switch(self):
+    def add_theme_switch(self, font_size):
         toggle_theme_button = Button(self.left_frame, text="LICeM Theme",
-                                     command=self.toggle_theme)
+                                     command=self.toggle_theme,
+                                     font=("Arial", int(font_size*0.8)))
         toggle_theme_button.pack(side=tk.TOP, pady=(20, 0), padx=10)
 
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.resizable(width=True, height=True)
     gui = OCVBatteryDecompositionGUI(root)
     root.mainloop()
