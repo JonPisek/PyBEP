@@ -30,11 +30,6 @@ setup(
                       'matplotlib',
                       'joblib',
                      ],
-    entry_points={
-        'console_scripts': [
-            'run_battery_OCV_decomposition = battery_OCV_decomposition.GUI:main',  # noqa: E501
-        ],
-    },
 )
 
 if __name__ == "__main__":
