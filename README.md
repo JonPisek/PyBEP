@@ -66,7 +66,7 @@ Once installed, you can easily launch the GUI for battery OCV decomposition:
 2. Navigate to the project directory if you haven't already.
 3. Run the following command to launch the GUI:
    ```sh
-   run_battery_OCV_decomposition
+   run_GUI
    ```
    This command will open the GUI interface, allowing you to perform battery OCV decomposition effortlessly.
 
