@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import Label, Entry, filedialog, IntVar, Scale, Button, DoubleVar
-from .optimization_functions import perform_full_optimization_parallel_to_json_GUI  # noqa: E501
-from .optimization_functions import perform_full_optimization_parallel
-from .add_curves import add_half_cell_data
-from .add_battery import load_soc_ocv_data
+from battery_OCV_decomposition.optimization_functions import perform_full_optimization_parallel_to_json_GUI  # noqa: E501
+from battery_OCV_decomposition.optimization_functions import perform_full_optimization_parallel  # noqa: E501
+from battery_OCV_decomposition.add_curves import add_half_cell_data
+from battery_OCV_decomposition.add_battery import load_soc_ocv_data
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
