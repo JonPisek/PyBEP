@@ -9,7 +9,7 @@
 <p align="center">
     Simple Python package with a built-in GUI that makes battery OCV decomposition a piece of cake.
     <br />
-    <a href="https://github.com/JonPisek/package_directory"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/JonPisek/battery_OCV_decomposition"><strong>Explore the docs »</strong></a>
 </p>
 
 ## About The Project
@@ -44,7 +44,7 @@ Before installing the package, ensure you have the following prerequisites:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/JonPisek/package_directory.git
+   git clone https://github.com/JonPisek/battery_OCV_decomposition.git
    ```
    Alternatively, you can download the repository as a ZIP file and extract it to your desired location.
 
@@ -135,7 +135,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Jon Pišek - jon.pisek@gmail.com
 
-Project Link: [https://github.com/JonPisek/package_directory](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/JonPisek/battery_OCV_decomposition](https://github.com/github_username/repo_name)
 
 
 <!-- ACKNOWLEDGMENTS -->
