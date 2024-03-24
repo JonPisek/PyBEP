@@ -1,6 +1,6 @@
-from optimization_functions import perform_full_optimization_parallel_to_json
-from add_curves import add_half_cell_data
-from add_battery import load_soc_ocv_data
+from .optimization_functions import perform_full_optimization_parallel_to_json
+from .add_curves import add_half_cell_data
+from .add_battery import load_soc_ocv_data
 
 
 def main():
