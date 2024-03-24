@@ -27,7 +27,12 @@ setup(
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.8',
-    install_requires=requirements,
+    install_requires=[
+                      'numpy',
+                      'scipy',
+                      'matplotlib',
+                      'joblib',
+                     ],
     entry_points={
         'console_scripts': [
             'run_battery_OCV_decomposition = battery_OCV_decomposition.GUI:main',  # noqa: E501
