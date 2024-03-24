@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import Label, Entry, filedialog, IntVar, Scale, Button, DoubleVar
-from battery_OCV_decomposition.optimization_functions import perform_full_optimization_parallel_to_json_GUI  # noqa: E501
-from battery_OCV_decomposition.optimization_functions import perform_full_optimization_parallel  # noqa: E501
-from battery_OCV_decomposition.add_curves import add_half_cell_data
-from battery_OCV_decomposition.add_battery import load_soc_ocv_data
+from optimization_functions import perform_full_optimization_parallel_to_json_GUI  # noqa: E501
+from optimization_functions import perform_full_optimization_parallel  # noqa: E501
+from add_curves import add_half_cell_data
+from add_battery import load_soc_ocv_data
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -16,14 +16,14 @@ class OCVBatteryDecompositionGUI:
         screen_height = master.winfo_screenheight()
         font_size = int(screen_height / 50)
         master.geometry(f"{int(screen_width)}x{int(screen_height)}")
-        self.default_cathode_loc = "data/cathode_data"
-        self.default_anode_loc = "data/anode_data"
-        self.default_battery_loc = "data/battery_data.txt"
-        self.cathode_loc = self.default_cathode_loc
-        self.anode_loc = self.default_anode_loc
-        self.battery_loc = self.default_battery_loc
-        self.interpolated_cathodes = add_half_cell_data(self.cathode_loc)
-        self.interpolated_anodes = add_half_cell_data(self.anode_loc)
+        self.default_cathode_loc = ""
+        self.default_anode_loc = ""
+        self.default_battery_loc = ""
+        self.cathode_loc = ""
+        self.anode_loc = ""
+        self.battery_loc = ""
+        self.interpolated_cathodes = None
+        self.interpolated_anodes = None
         self.SOC_battery = None
         self.OCV_battery = None
         self.dark_mode = False
@@ -57,29 +57,41 @@ class OCVBatteryDecompositionGUI:
         self.label_cathode_loc.pack()
         self.entry_cathode_loc = Entry(self.left_frame, width=font_size*3,
                                        font=("Arial", int(font_size*0.8)))
-        self.entry_cathode_loc.insert(0, self.default_cathode_loc)
         self.entry_cathode_loc.pack()
+        self.browse_button_cathode = tk.Button(
+            self.left_frame, text="Browse",
+            command=lambda: self.browse_files(self.entry_cathode_loc),
+            width=int(font_size*0.8),
+            font=("Arial", int(font_size*0.8)))
+        self.browse_button_cathode.pack()
+
         self.label_anode_loc = Label(
             self.left_frame, text="Anode Folder Location:",
             font=("Arial", int(font_size*0.8)), bg="white")
         self.label_anode_loc.pack()
         self.entry_anode_loc = Entry(self.left_frame, width=font_size*3,
                                      font=("Arial", int(font_size*0.8)))
-        self.entry_anode_loc.insert(0, self.default_anode_loc)
         self.entry_anode_loc.pack()
+        self.browse_button_anode = tk.Button(
+            self.left_frame, text="Browse",
+            command=lambda: self.browse_files(self.entry_anode_loc),
+            width=int(font_size*0.8),
+            font=("Arial", int(font_size*0.8)))
+        self.browse_button_anode.pack()
+
         self.label_battery_loc = Label(
             self.left_frame, text="Battery File Location:",
             font=("Arial", int(font_size*0.8)), bg="white")
         self.label_battery_loc.pack()
         self.entry_battery_loc = Entry(self.left_frame, width=font_size*3,
                                        font=("Arial", int(font_size*0.8)))
-        self.entry_battery_loc.insert(0, self.default_battery_loc)
         self.entry_battery_loc.pack()
-        self.browse_button = tk.Button(
-            self.left_frame, text="Browse", command=self.browse_files,
+        self.browse_button_battery = tk.Button(
+            self.left_frame, text="Browse",
+            command=lambda: self.browse_files(self.entry_battery_loc),
             width=int(font_size*0.8),
             font=("Arial", int(font_size*0.8)))
-        self.browse_button.pack()
+        self.browse_button_battery.pack()
 
     def create_input_widgets(self, font_size):
         self.iterations_frame = tk.Frame(self.left_frame, bg="white")
@@ -117,30 +129,29 @@ class OCVBatteryDecompositionGUI:
             variable=self.derivative_var, length=font_size*15, resolution=0.2)
         self.scale_derivative.pack()
 
-    def browse_files(self):
-        file_path = filedialog.askopenfilename(
-            filetypes=[("Text files", "*.txt")])
+    def browse_files(self, entry_widget):
+        if entry_widget == self.entry_battery_loc:
+            file_path = filedialog.askopenfilename(
+                filetypes=[("Text files", "*.txt")])
+        else:
+            file_path = filedialog.askdirectory()
         if file_path:
-            current_entry = self.entry_battery_loc
-            current_entry.delete(0, tk.END)
-            current_entry.insert(0, file_path)
+            entry_widget.delete(0, tk.END)
+            entry_widget.insert(0, file_path)
 
     def run_optimization(self, font_size):
         iterations = self.iterations_var.get()
         battery = self.battery_var.get()
         derivative_inverse = self.derivative_var.get()
-        self.cathode_loc = self.entry_cathode_loc.get(
-        ) or self.default_cathode_loc
-        self.anode_loc = self.entry_anode_loc.get(
-        ) or self.default_anode_loc
-        self.battery_loc = self.entry_battery_loc.get(
-        ) or self.default_battery_loc
-        self.interpolated_cathodes = add_half_cell_data(
-            self.cathode_loc)
-        self.interpolated_anodes = add_half_cell_data(
-            self.anode_loc)
-        self.SOC_battery, self.OCV_battery = load_soc_ocv_data(
-            self.battery_loc)
+        self.cathode_loc = self.entry_cathode_loc.get()
+        self.anode_loc = self.entry_anode_loc.get()
+        self.battery_loc = self.entry_battery_loc.get()
+        if not (self.cathode_loc and self.anode_loc and self.battery_loc):
+            print("Please select all folder locations.")
+            return
+        self.interpolated_cathodes = add_half_cell_data(self.cathode_loc)
+        self.interpolated_anodes = add_half_cell_data(self.anode_loc)
+        self.SOC_battery, self.OCV_battery = load_soc_ocv_data(self.battery_loc)  # noqa: E501
         result = perform_full_optimization_parallel(
             self.SOC_battery, self.OCV_battery,
             self.interpolated_cathodes, self.interpolated_anodes,
