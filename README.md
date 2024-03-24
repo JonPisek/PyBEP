@@ -50,7 +50,7 @@ Before installing the package, ensure you have the following prerequisites:
 
 2. Navigate to the project directory:
    ```sh
-   cd package_directory
+   cd battery_OCV_decomposition
    ```
 
 3. Install the package using `pip`:
