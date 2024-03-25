@@ -6,6 +6,11 @@ from add_curves import add_half_cell_data
 from add_battery import load_soc_ocv_data
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import sys
+import os
+
+# Add the top-level package directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
 class OCVBatteryDecompositionGUI:
