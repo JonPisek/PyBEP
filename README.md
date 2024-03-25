@@ -70,7 +70,7 @@ Once installed, you can easily launch the GUI for battery OCV decomposition:
    ```
    This command will open the GUI interface, allowing you to perform battery OCV decomposition effortlessly.
 
-That's it! You're now ready to use battery_OCV_decomposition for battery OCV decomposition analysis.
+That's it! You're now ready to use the GUI for battery OCV decomposition analysis.
 
 
 <!-- USAGE EXAMPLES -->
