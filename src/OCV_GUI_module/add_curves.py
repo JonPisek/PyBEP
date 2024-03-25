@@ -62,10 +62,3 @@ def add_half_cell_data(directory_name):
         half_cell_dictionary[new_dataset['ID_number']] = new_dataset
 
     return half_cell_dictionary
-
-
-# Example usage
-# interpolated_cathodes = add_half_cell_data('data/cathode_data')
-# interpolated_anodes = add_half_cell_data('data/anode_data')
-# print(interpolated_cathodes)
-# print(interpolated_anodes)

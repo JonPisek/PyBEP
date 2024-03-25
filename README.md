@@ -9,7 +9,7 @@
 <p align="center">
     Simple Python package with a built-in GUI that makes battery OCV decomposition a piece of cake.
     <br />
-    <a href="https://github.com/JonPisek/battery_OCV_decomposition"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/JonPisek/battery_OCV_decomposition_project"><strong>Explore the docs »</strong></a>
 </p>
 
 ## About The Project
@@ -44,13 +44,13 @@ Before installing the package, ensure you have the following prerequisites:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/JonPisek/battery_OCV_decomposition.git
+   git clone https://github.com/JonPisek/battery_OCV_decomposition_project.git
    ```
    Alternatively, you can download the repository as a ZIP file and extract it to your desired location.
 
 2. Navigate to the project directory:
    ```sh
-   cd battery_OCV_decomposition
+   cd battery_OCV_decomposition_project
    ```
 
 3. Install the package using `pip`:
@@ -66,7 +66,7 @@ Once installed, you can easily launch the GUI for battery OCV decomposition:
 2. Navigate to the project directory if you haven't already.
 3. Run the following command to launch the GUI:
    ```sh
-   run_GUI
+   python -m src.OCV_GUI_module
    ```
    This command will open the GUI interface, allowing you to perform battery OCV decomposition effortlessly.
 
@@ -79,14 +79,14 @@ That's it! You're now ready to use battery_OCV_decomposition for battery OCV dec
 Using the GUI, you will be greeted with the following interface:
 
 <div align="center">
-    <img src="LICEM/GUI_open.jpg" alt="GUI Screenshot" width="1000" height="300">
+    <img src="LICEM/GUI_open.jpg" alt="GUI Screenshot" width="1000" height="600">
 </div>
 
 The process is straightforward, explained from top to bottom:
 
-1. **Cathode Folder Location** and **Anode Folder Location**: These locations are preset to be inside the data folder, but you can modify them as needed. It's recommended to leave the default settings. If you wish to contribute new half-cell curves, you can add them to the `anode_data` or `cathode_data` folders. For more information on importing additional half-cell data, refer to the files already present in these folders.
+1. **Cathode Folder Location** and **Anode Folder Location**: Click the "Browse" button under each bracket to choose your cathode and anode data folders. If you don't have your own data, you can access the `data` folder inside this project where you can find our data. If you wish to contribute new half-cell curves, you can add them to the `anode_data` or `cathode_data` folders. For more information on importing additional half-cell data, refer to the files already present in these folders.
 
-2. **Battery File Location**: Click "Browse" to select a TXT file from your computer. Ensure the format of your battery data matches the files stored in the data folder.
+2. **Battery File Location**: Click the "Browse" button to select a TXT file from your computer. Ensure the format of your battery data matches the TXT files stored as examples in our `data` folder.
 
 3. **Parameters**:
    - **Iterations**: The optimization calculates based on the mathematical method of differential evolution, which involves a certain amount of randomness. Higher iterations yield more consistent results but take longer to compute.
@@ -95,7 +95,7 @@ The process is straightforward, explained from top to bottom:
 Once you've defined all parameters, click "Run Optimization" to initiate the optimization process. After completion, you will see the calculated results:
 
 <div align="center">
-    <img src="LICEM/run_opt.jpg" alt="Optimization Results" width="1000" height="300">
+    <img src="LICEM/run_opt.jpg" alt="Optimization Results" width="1000" height="600">
 </div>
 
 The GUI displays the name of the TXT file with the best cathode, best anode, parameters (e, f, g, h in that order), and the lowest calculated RMSD value. It also plots the results using Matplotlib.
@@ -106,7 +106,7 @@ Additionally, there's a theme toggle that changes the appearance of the GUI.
 
 ## Using `perform_full_optimization_parallel_to_json()` function
 
-If you prefer not to use the GUI, you can directly use the `perform_full_optimization_parallel_to_json()` function. It accepts the same arguments explained in the Usage of the GUI section and returns the same JSON file obtained by pressing the "Download result" button in the GUI. For more information, refer to the `main_script.py` file, where you can see how to import and utilize the function.
+If you prefer not to use the GUI, you can directly use the `perform_full_optimization_parallel_to_json()` function. It accepts the same arguments explained in the Usage of the GUI section and returns the same JSON file obtained by pressing the "Download result" button in the GUI. You can import the function from optimization_functons.py.
 
 
 <!-- CONTRIBUTING -->
@@ -135,7 +135,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Jon Pišek - jon.pisek@gmail.com
 
-Project Link: [https://github.com/JonPisek/battery_OCV_decomposition](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/JonPisek/battery_OCV_decomposition_project](https://github.com/github_username/repo_name)
 
 
 <!-- ACKNOWLEDGMENTS -->
