@@ -284,9 +284,6 @@ class OCVBatteryDecompositionGUI:
                                     fg="white" if self.dark_mode else "black")  # noqa: E501
         self.label_battery_loc.config(bg="#2C2F33" if self.dark_mode else "white",  # noqa: E501
                                       fg="white" if self.dark_mode else "black")  # noqa: E501
-        self.browse_button.config(bg="#99aab5" if self.dark_mode else "SystemButtonFace",  # noqa: E501
-                                  fg="black" if self.dark_mode else "black")
-        self.master.config(bg="#2C2F33" if self.dark_mode else "white")
 
     def add_theme_switch(self, font_size):
         toggle_theme_button = Button(self.left_frame, text="LICeM Theme",
