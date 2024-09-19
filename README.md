@@ -2,10 +2,6 @@
 <br />
 
 <div align="center">
-    <img src="LICEM/logo3.png" alt="logo" width="250" height="80">
-</div>
-
-<div align="center">
     <img src="LICEM/logo.jpg" alt="logo" width="250" height="80">
 </div>
 
