@@ -1,6 +1,8 @@
-# GUI testing file
-
 import tkinter as tk
+import shutil
+import os
+import json
+import numpy as np
 from tkinter import Label, Entry, filedialog, IntVar, Scale, Button, DoubleVar
 from optimization_functions import perform_full_optimization_parallel_to_json_GUI  # noqa: E501
 from optimization_functions import perform_full_optimization_parallel  # noqa: E501
@@ -9,53 +11,74 @@ from add_battery import load_soc_ocv_data
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-
 class OCVBatteryDecompositionGUI:
     def __init__(self, master):
         self.master = master
         master.title("OCV Battery Decomposition")
+        
+        # Set the window size to match the screen resolution
         screen_width = master.winfo_screenwidth()
         screen_height = master.winfo_screenheight()
         font_size = int(screen_height / 50)
         master.geometry(f"{int(screen_width)}x{int(screen_height)}")
+        
+        # Initialize default file locations
         self.default_cathode_loc = ""
         self.default_anode_loc = ""
         self.default_battery_loc = ""
         self.cathode_loc = ""
         self.anode_loc = ""
         self.battery_loc = ""
+        
+        # Initialize variables for interpolated data and battery SOC/OCV
         self.interpolated_cathodes = None
         self.interpolated_anodes = None
         self.SOC_battery = None
         self.OCV_battery = None
-        self.dark_mode = False
-        self.left_frame = tk.Frame(master, width=screen_width, bg="white")
+        
+        # Create left and right frames for the GUI
+        self.left_frame = tk.Frame(master, width=screen_width, bg="#2C2F33")
         self.left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.right_frame = tk.Frame(master)
         self.right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        # Create file location entries, input widgets, and buttons
         self.create_file_location_entries(font_size)
         self.create_input_widgets(font_size)
+        
+        # Run optimization button
         self.run_button = tk.Button(
             self.left_frame, text="Run Optimization",
             command=lambda: self.run_optimization(font_size),
             width=int(font_size),
             font=("Arial", int(font_size*0.8)))
         self.run_button.pack(pady=10)
+        
+        # Download result button
         self.download_button = Button(
             self.left_frame, text="Download Result",
             command=self.download_result, width=int(font_size),
             font=("Arial", int(font_size*0.8)))
+        
+        # Analyze degradation button
+        self.analyze_degradation_button = Button(
+            self.left_frame, text="Analyze Degradation",
+            command=self.analyze_degradation, width=int(font_size),
+            font=("Arial", int(font_size*0.8)))
+        
+        # Result label and plot
         self.result_label = None
         self.plot = self.create_empty_plot()
-        self.plot.get_tk_widget().pack(
-            side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.plot.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        
+        # Add logo
         self.add_logo(font_size)
-        self.add_theme_switch(font_size)
 
     def create_file_location_entries(self, font_size):
+        # Create labels and entries for cathode, anode, and battery file locations
         self.label_cathode_loc = Label(
             self.left_frame, text="Cathode Folder Location:",
-            font=("Arial", int(font_size*0.8)), bg="white")
+            font=("Arial", int(font_size*0.8)), bg="#2C2F33", fg="white")
         self.label_cathode_loc.pack()
         self.entry_cathode_loc = Entry(self.left_frame, width=font_size*3,
                                        font=("Arial", int(font_size*0.8)))
@@ -69,7 +92,7 @@ class OCVBatteryDecompositionGUI:
 
         self.label_anode_loc = Label(
             self.left_frame, text="Anode Folder Location:",
-            font=("Arial", int(font_size*0.8)), bg="white")
+            font=("Arial", int(font_size*0.8)), bg="#2C2F33", fg="white")
         self.label_anode_loc.pack()
         self.entry_anode_loc = Entry(self.left_frame, width=font_size*3,
                                      font=("Arial", int(font_size*0.8)))
@@ -83,7 +106,7 @@ class OCVBatteryDecompositionGUI:
 
         self.label_battery_loc = Label(
             self.left_frame, text="Battery File Location:",
-            font=("Arial", int(font_size*0.8)), bg="white")
+            font=("Arial", int(font_size*0.8)), bg="#2C2F33", fg="white")
         self.label_battery_loc.pack()
         self.entry_battery_loc = Entry(self.left_frame, width=font_size*3,
                                        font=("Arial", int(font_size*0.8)))
@@ -96,11 +119,12 @@ class OCVBatteryDecompositionGUI:
         self.browse_button_battery.pack()
 
     def create_input_widgets(self, font_size):
-        self.iterations_frame = tk.Frame(self.left_frame, bg="white")
+        # Create input widgets for iterations, battery weight, and derivative weight
+        self.iterations_frame = tk.Frame(self.left_frame, bg="#2C2F33")
         self.iterations_frame.pack(pady=(0, 0), padx=0, fill=tk.X)
         self.label_iterations = Label(
             self.iterations_frame, text="Iterations:",
-            font=("Arial", int(font_size*0.8)), bg="white")
+            font=("Arial", int(font_size*0.8)), bg="#2C2F33", fg="white")
         self.label_iterations.pack()
         self.iterations_var = IntVar()
         self.scale_iterations = Scale(
@@ -108,22 +132,24 @@ class OCVBatteryDecompositionGUI:
             variable=self.iterations_var, length=font_size*15)
         self.scale_iterations.set(1)
         self.scale_iterations.pack()
-        self.battery_frame = tk.Frame(self.left_frame, bg="white")
+
+        self.battery_frame = tk.Frame(self.left_frame, bg="#2C2F33")
         self.battery_frame.pack(pady=(0, 0), padx=0, fill=tk.X)
         self.label_battery = Label(
             self.battery_frame, text="Battery weight:",
-            font=("Arial", int(font_size*0.8)), bg="white")
+            font=("Arial", int(font_size*0.8)), bg="#2C2F33", fg="white")
         self.label_battery.pack()
         self.battery_var = DoubleVar(value=1)
         self.scale_battery = Scale(
             self.battery_frame, from_=0, to=1, orient=tk.HORIZONTAL,
             variable=self.battery_var, length=font_size*15, resolution=0.2)
         self.scale_battery.pack()
-        self.derivative_frame = tk.Frame(self.left_frame, bg="white")
+
+        self.derivative_frame = tk.Frame(self.left_frame, bg="#2C2F33")
         self.derivative_frame.pack(pady=(0, 0), padx=0, fill=tk.X)
         self.label_derivative = Label(
             self.derivative_frame, text="Differential capacity weight:",
-            font=("Arial", int(font_size*0.8)), bg="white")
+            font=("Arial", int(font_size*0.8)), bg="#2C2F33", fg="white")
         self.label_derivative.pack()
         self.derivative_var = DoubleVar(value=0)
         self.scale_derivative = Scale(
@@ -132,6 +158,7 @@ class OCVBatteryDecompositionGUI:
         self.scale_derivative.pack()
 
     def browse_files(self, entry_widget):
+        # Browse for files or directories based on the entry widget
         if entry_widget == self.entry_battery_loc:
             file_path = filedialog.askopenfilename(
                 filetypes=[("Text files", "*.txt")])
@@ -142,18 +169,25 @@ class OCVBatteryDecompositionGUI:
             entry_widget.insert(0, file_path)
 
     def run_optimization(self, font_size):
+        # Run the optimization process
         iterations = self.iterations_var.get()
         battery = self.battery_var.get()
         derivative_inverse = self.derivative_var.get()
         self.cathode_loc = self.entry_cathode_loc.get()
         self.anode_loc = self.entry_anode_loc.get()
         self.battery_loc = self.entry_battery_loc.get()
+        
+        # Check if all file locations are selected
         if not (self.cathode_loc and self.anode_loc and self.battery_loc):
             print("Please select all folder locations.")
             return
+        
+        # Load and interpolate cathode and anode data
         self.interpolated_cathodes = add_half_cell_data(self.cathode_loc)
         self.interpolated_anodes = add_half_cell_data(self.anode_loc)
         self.SOC_battery, self.OCV_battery = load_soc_ocv_data(self.battery_loc)  # noqa: E501
+        
+        # Perform optimization
         result = perform_full_optimization_parallel(
             self.SOC_battery, self.OCV_battery,
             self.interpolated_cathodes, self.interpolated_anodes,
@@ -161,6 +195,7 @@ class OCVBatteryDecompositionGUI:
             derivative_inverse=derivative_inverse
         )
 
+        # Plot results and display optimization results
         if result['calculated_battery_OCV_opt'] is not None:
             self.plot_results(result)
             data_label_text = (
@@ -172,17 +207,23 @@ class OCVBatteryDecompositionGUI:
             if self.result_label:
                 self.result_label.destroy()
             self.result_label = Label(self.left_frame, text=data_label_text,
-                                      font=("Arial", font_size))
+                                    font=("Arial", font_size), fg="white", bg="#2C2F33")
             self.result_label.pack(pady=10)
-            self.download_button.pack_forget()
+            
+            # Show download and analyze degradation buttons
             self.download_button.pack(pady=10)
-        else:
-            print("Interpolation for the best cathode or anode failed.")
+            self.analyze_degradation_button.pack(pady=10)
+
+            # Remove instruction label if it exists
+            if hasattr(self, 'instruction_label'):
+                self.instruction_label.destroy()
 
     def download_result(self):
+        # Download the optimization result as a JSON file
         result_filename = filedialog.asksaveasfilename(
             defaultextension=".json",
-            filetypes=[("JSON files", "*.json")])
+            filetypes=[("JSON files", "*.json")]
+        )
         if result_filename:
             perform_full_optimization_parallel_to_json_GUI(
                 result_filename, self.SOC_battery, self.OCV_battery,
@@ -192,9 +233,90 @@ class OCVBatteryDecompositionGUI:
                 derivative_inverse=self.derivative_var.get()
             )
             print("Result downloaded successfully.")
-            self.download_button.pack_forget()
+        
+        # Hide the download button after downloading
+        self.download_button.pack_forget()
+
+    def analyze_degradation(self):
+        # Analyze degradation by creating a folder and saving data
+        font_size = 12
+
+        # Hide the analyze degradation button
+        self.analyze_degradation_button.pack_forget()
+
+        # Create a main folder for degradation analysis
+        main_folder_name = "degradation_analyzation"
+        
+        if os.path.exists(main_folder_name):
+            shutil.rmtree(main_folder_name)
+            print(f"Existing folder {main_folder_name} removed.")
+        
+        os.makedirs(main_folder_name)
+        print(f"Created main folder: {main_folder_name}")
+
+        # Save optimization result to a JSON file
+        result_filename = os.path.join(main_folder_name, "optimization_result.json")
+        
+        if not os.path.exists(result_filename):
+            print(f"{result_filename} does not exist. Automatically downloading the result...")
+            perform_full_optimization_parallel_to_json_GUI(
+                result_filename, self.SOC_battery, self.OCV_battery,
+                self.interpolated_cathodes, self.interpolated_anodes,
+                iterations=self.iterations_var.get(),
+                battery=self.battery_var.get(),
+                derivative_inverse=self.derivative_var.get()
+            )
+            print(f"Result saved to {result_filename} automatically.")
+        
+        # Load the saved JSON data
+        with open(result_filename, "r") as file:
+            data = json.load(file)
+
+        # Extract anode and cathode SOC/OCP data
+        anode_soc_list = data["Anode SOC"]
+        anode_ocp_list = data["Anode OCP"]
+        anode_soc_PyBep = np.array(anode_soc_list)
+        anode_ocp_PyBep = np.array(anode_ocp_list)
+
+        cathode_soc_list = data["Cathode SOC"]
+        cathode_ocp_list = data["Cathode OCP"]
+        cathode_soc_PyBep = np.array(cathode_soc_list)
+        cathode_ocp_PyBep = np.array(cathode_ocp_list)
+
+        # Save anode and cathode data to text files
+        self.save_to_txt(anode_soc_PyBep, anode_ocp_PyBep, main_folder_name, "A1D", "A1D.txt")
+        self.save_to_txt(cathode_soc_PyBep, cathode_ocp_PyBep, main_folder_name, "C1D", "C1D.txt")
+
+        print("Degradation analysis complete and files saved.")
+
+        # Display instructions for further analysis
+        self.instruction_label = Label(
+            self.left_frame,
+            text=("To analyze degradation of this Battery OCV, please choose C1D and A1D "
+                "folders for Cathode Folder Location and Anode Folder location. Then pick the "
+                "Degraded Battery OCV and press Run Optimization button."),
+            font=("Arial", int(font_size * 0.8)),
+            fg="white",
+            bg="#2C2F33",
+            wraplength=400
+        )
+        self.instruction_label.pack(pady=10)
+
+    def save_to_txt(self, soc_data, ocp_data, main_folder_name, prefix, filename):
+        # Save SOC and OCP data to a text file
+        subfolder_name = os.path.join(main_folder_name, prefix)
+        if not os.path.exists(subfolder_name):
+            os.makedirs(subfolder_name)
+            print(f"Created subfolder: {subfolder_name}")
+
+        file_path = os.path.join(subfolder_name, filename)
+        with open(file_path, "w") as file:
+            for soc, ocp in zip(soc_data, ocp_data):
+                file.write(f"{soc} {ocp}\n")
+        print(f"Data saved to {file_path}.")
 
     def plot_results(self, result):
+        # Plot the optimization results
         if self.plot is None:
             self.plot = FigureCanvasTkAgg(
                 plt.figure(figsize=(8, 6)), master=self.right_frame)
@@ -207,6 +329,7 @@ class OCVBatteryDecompositionGUI:
             self.plot.get_tk_widget().pack(
                 side=tk.TOP, fill=tk.BOTH, expand=True)
 
+        # Plot the measured and optimized battery OCV, cathode OCP, and anode OCP
         plt.plot(
             self.SOC_battery, self.OCV_battery,
             'r-', label='Measured battery OCV')
@@ -229,13 +352,15 @@ class OCVBatteryDecompositionGUI:
         plt.legend()
 
     def create_empty_plot(self):
+        # Create an empty plot for initial display
         empty_fig = plt.figure(figsize=(8, 6))
         empty_plot = FigureCanvasTkAgg(empty_fig, master=self.right_frame)
         return empty_plot
 
     def add_logo(self, font_size):
+        # Add a logo to the GUI
         canvas = tk.Canvas(self.left_frame, width=font_size*20,
-                           height=font_size*10, bg="#FFFFFF")
+                           height=font_size*10, bg="white")
         canvas.pack(side=tk.BOTTOM, padx=0, pady=0)
         text = "LICeM"
         text_color = "#2C2F33"
@@ -265,33 +390,7 @@ class OCVBatteryDecompositionGUI:
                                    fill=text_color)
             x_pos += font_size*3
 
-    def toggle_theme(self):
-        self.dark_mode = not self.dark_mode
-        self.left_frame.config(bg="#2C2F33" if self.dark_mode else "white")  # noqa: E501
-        self.iterations_frame.config(bg="#8bbcd6" if self.dark_mode else "white")  # noqa: E501
-        self.battery_frame.config(bg="#8bbcd6" if self.dark_mode else "white")  # noqa: E501
-        self.derivative_frame.config(bg="#8bbcd6" if self.dark_mode else "white")  # noqa: E501
-        self.label_iterations.config(bg="#8bbcd6" if self.dark_mode else "white")  # noqa: E501
-        self.label_battery.config(bg="#8bbcd6" if self.dark_mode else "white")  # noqa: E501
-        self.label_derivative.config(bg="#8bbcd6" if self.dark_mode else "white")  # noqa: E501
-        self.run_button.config(bg="#99aab5" if self.dark_mode else "SystemButtonFace",  # noqa: E501
-                               fg="black" if self.dark_mode else "black")  # noqa: E501
-        self.download_button.config(bg="#99aab5" if self.dark_mode else "SystemButtonFace",  # noqa: E501
-                                    fg="black" if self.dark_mode else "black")  # noqa: E501
-        self.label_cathode_loc.config(bg="#2C2F33" if self.dark_mode else "white",  # noqa: E501
-                                      fg="white" if self.dark_mode else "black")  # noqa: E501
-        self.label_anode_loc.config(bg="#2C2F33" if self.dark_mode else "white",  # noqa: E501
-                                    fg="white" if self.dark_mode else "black")  # noqa: E501
-        self.label_battery_loc.config(bg="#2C2F33" if self.dark_mode else "white",  # noqa: E501
-                                      fg="white" if self.dark_mode else "black")  # noqa: E501
-
-    def add_theme_switch(self, font_size):
-        toggle_theme_button = Button(self.left_frame, text="LICeM Theme",
-                                     command=self.toggle_theme,
-                                     font=("Arial", int(font_size*0.8)))
-        toggle_theme_button.pack(side=tk.TOP, pady=(20, 0), padx=10)
-
-
+# Main application loop
 root = tk.Tk()
 root.resizable(width=True, height=True)
 gui = OCVBatteryDecompositionGUI(root)
