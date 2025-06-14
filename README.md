@@ -91,7 +91,17 @@ The process is straightforward, explained from top to bottom:
 
 3. **Parameters**:
    - **Iterations**: The optimization calculates based on the mathematical method of differential evolution, which involves a certain amount of randomness. Higher iterations yield more consistent results but take longer to compute.
-   - **Battery weight/Differential capacity weight**: The core function of this calculation is to determine the Root Mean Square Deviation (RMSD) value between measured battery data and calculated battery data (which is derived from aligned anode and cathode OCP values). By computing the derivatives of both sets of data and then calculating the reciprocal of these derivatives, we get what is known as the differential capacity of the battery. Differential capacity curves can sometimes aid in finding an optimal alignment for the anode and cathode. By adjusting the two parameters, you can specify the degree of influence each value will have on the final result.
+   - **Battery weight/Differential capacity weight**: The core function of this calculation is to determine the Root Mean Square Deviation (RMSD) value between measured battery data and calculated battery data (which is derived from aligned anode and cathode OCP values). By computing the derivatives of both sets of data and then calculating the reciprocal of these derivatives, we get what is known as the differential capacity of the battery. Differential capacity curves can sometimes aid in finding an optimal alignment for the anode and cathode. The RMSD is defined as:
+
+$$ \text{RMSD} = P \sqrt{\frac{\sum \left( \text{OCV}_{\text{c}} - \text{OCV}_{\text{m}} \right)^2}{N}} + (1-P) \sqrt{\frac{\sum \left( dQ_{\text{c}}/dV - dQ_{\text{m}}/dV \right)^2}{N}}, $$
+
+where $P$ is the battery weight (and $1-P$ is the differential capacity weight), and:
+
+$$ dQ_{\text{c}}/dV = \left(\frac{d\text{OCV}_{\text{c}}}{d\text{SOC}}\right)^{-1}, $$
+
+$$ dQ_{\text{m}}/dV = \left(\frac{d\text{OCV}_{\text{m}}}{d\text{SOC}}\right)^{-1}. $$
+
+By adjusting the two parameters, $P$ and $(1-P)$, you can specify the degree of influence each term will have on the final result.
 
 Once you've defined all parameters, click "Run Optimization" to initiate the optimization process. After completion, you will see the calculated results:
 
