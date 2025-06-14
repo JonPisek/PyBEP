@@ -2,7 +2,7 @@
 <br />
 
 <div align="center">
-    <img src="LICEM/logo3.jpg" alt="logo" width="250" height="250">
+    <img src="LICEM/Logo2.png" alt="logo" width="250" height="300">
 </div>
 
 <h3 align="center">Battery electrode potentials calculator</h3>
@@ -80,7 +80,7 @@ That's it! You're now ready to use the GUI for battery OCV decomposition analysi
 Using the GUI, you will be greeted with the following interface:
 
 <div align="center">
-    <img src="LICEM/GUI_open.jpg" alt="GUI Screenshot" width="1000" height="600">
+    <img src="LICEM/GUI_open.jpg" alt="GUI Screenshot" width="500" height="300">
 </div>
 
 The process is straightforward, explained from top to bottom:
@@ -96,14 +96,19 @@ The process is straightforward, explained from top to bottom:
 Once you've defined all parameters, click "Run Optimization" to initiate the optimization process. After completion, you will see the calculated results:
 
 <div align="center">
-    <img src="LICEM/run_opt.jpg" alt="Optimization Results" width="1000" height="600">
+    <img src="LICEM/run_opt.jpg" alt="Optimization Results" width="500" height="300">
 </div>
 
 The GUI displays the name of the TXT file with the best cathode, best anode, parameters (e, f, g, h in that order), and the lowest calculated RMSD value. It also plots the results using Matplotlib.
 
 After optimization, a "Download result" button appears. Clicking it allows you to choose where to save your result. The data is saved as a JSON file containing all the calculated data. For the format of the data, refer to an example under `results/test.json`. The button disappears after download and reappears when you run a new optimization.
 
-Additionally, there's a theme toggle that changes the appearance of the GUI.
+## ⚠️ Attention
+
+This project is currently under active development. As a result, there may be temporary inconsistencies between the graphical user interface (GUI) and the instructions provided in this README.
+
+We appreciate your understanding and encourage you to reach out if you notice any discrepancies or have questions. Your feedback is valuable and helps us improve the project.
+
 
 ## Using `perform_full_optimization_parallel_to_json()` function
 
@@ -135,12 +140,4 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Jon Pišek - jon.pisek@gmail.com
 
-Project Link: [https://github.com/JonPisek/battery_OCV_decomposition_project](https://github.com/github_username/repo_name)
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-* []()
-* []()
-* []()
+Project Link: [https://github.com/JonPisek/PyBEP](https://github.com/github_username/repo_name)
