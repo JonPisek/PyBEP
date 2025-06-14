@@ -93,7 +93,9 @@ The process is straightforward, explained from top to bottom:
    - **Iterations**: The optimization calculates based on the mathematical method of differential evolution, which involves a certain amount of randomness. Higher iterations yield more consistent results but take longer to compute.
    - **Battery weight/Differential capacity weight**: The core function of this calculation is to determine the Root Mean Square Deviation (RMSD) value between measured battery data and calculated battery data (which is derived from aligned anode and cathode OCP values). By computing the derivatives of both sets of data and then calculating the reciprocal of these derivatives, we get what is known as the differential capacity of the battery. Differential capacity curves can sometimes aid in finding an optimal alignment for the anode and cathode. The RMSD is defined as:
 
-$$ \text{RMSD} = P \sqrt{\frac{\sum \left( \text{OCV}_{\text{c}} - \text{OCV}_{\text{m}} \right)^2}{N}} + (1-P) \sqrt{\frac{\sum \left( dQ_{\text{c}}/dV - dQ_{\text{m}}/dV \right)^2}{N}}, $$
+<div align="center">
+    <img src="LICEM/equation.jpg" alt="equation" width="500" height="50">
+</div>
 
 where $P$ is the battery weight (and $1-P$ is the differential capacity weight), and:
 
