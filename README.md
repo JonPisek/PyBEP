@@ -2,7 +2,7 @@
 <br />
 
 <div align="center">
-    <img src="LICEM/logo2.png" alt="logo" width="250" height="300">
+    <img src="LICEM/logo3.jpg" alt="logo" width="250" height="250">
 </div>
 
 <h3 align="center">Battery electrode potentials calculator</h3>
