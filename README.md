@@ -141,3 +141,8 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 Jon Pišek - jon.pisek@gmail.com
 
 Project Link: [https://github.com/JonPisek/PyBEP](https://github.com/github_username/repo_name)
+
+Developed by:
+<div align="center">
+  <img src="LICEM/logo.jpg" alt="LICEM logo" width="200">
+</div>
