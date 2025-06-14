@@ -2,15 +2,15 @@
 <br />
 
 <div align="center">
-    <img src="LICEM/logo.jpg" alt="logo" width="250" height="80">
+    <img src="LICEM/logo2.png" alt="logo" width="250" height="300">
 </div>
 
-<h3 align="center">BATTERY OCV DECOMPOSITION</h3>
+<h3 align="center">Battery electrode potentials calculator</h3>
 
 <p align="center">
     Simple Python package with a built-in GUI that makes battery OCV decomposition a piece of cake.
     <br />
-    <a href="https://github.com/JonPisek/battery_OCV_decomposition_project"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/JonPisek/PyBEP"><strong>Explore the docs »</strong></a>
 </p>
 
 ## About The Project
@@ -45,13 +45,13 @@ Before installing the package, ensure you have the following prerequisites:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/JonPisek/battery_OCV_decomposition_project.git
+   git clone https://github.com/JonPisek/PyBEP.git
    ```
    Alternatively, you can download the repository as a ZIP file and extract it to your desired location.
 
 2. Navigate to the project directory:
    ```sh
-   cd battery_OCV_decomposition_project
+   cd PyBEP
    ```
 
 3. Install the package using `pip`:
@@ -61,13 +61,13 @@ Before installing the package, ensure you have the following prerequisites:
 
 ### Usage
 
-Once installed, you can easily launch the GUI for battery OCV decomposition:
+Once installed, you can easily launch the GUI for PyBEP:
 
 1. Open a terminal or command prompt.
 2. Navigate to the project directory if you haven't already.
 3. Run the following command to launch the GUI:
    ```sh
-   python -m src.OCV_GUI_module
+   python -m src.OCV_GUI_module.GUI_from_terminal
    ```
    This command will open the GUI interface, allowing you to perform battery OCV decomposition effortlessly.
 
@@ -108,7 +108,6 @@ Additionally, there's a theme toggle that changes the appearance of the GUI.
 ## Using `perform_full_optimization_parallel_to_json()` function
 
 If you prefer not to use the GUI, you can directly use the `perform_full_optimization_parallel_to_json()` function. It accepts the same arguments explained in the Usage of the GUI section and returns the same JSON file obtained by pressing the "Download result" button in the GUI. You can import the function from optimization_functons.py.
-
 
 <!-- CONTRIBUTING -->
 ## Contributing
