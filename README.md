@@ -85,7 +85,11 @@ Using the GUI, you will be greeted with the following interface:
 
 The process is straightforward, explained from top to bottom:
 
-1. **Cathode Folder Location** and **Anode Folder Location**: Click the "Browse" button under each bracket to choose your cathode and anode data folders. If you don't have your own data, you can access the `data` folder inside this project where you can find our data. If you wish to contribute new half-cell curves, you can add them to the `anode_data` or `cathode_data` folders. For more information on importing additional half-cell data, refer to the files already present in these folders.
+1. **Cathode Folder Location** and **Anode Folder Location**: Click the "Browse" button under each bracket to choose your cathode and anode data folders. If you don't have your own data, you can access the `data` folder inside this project where you can find our data. If you wish to contribute new half-cell curves, you can add them to the `anode_data` or `cathode_data` folders.
+
+⚠️ WARNING! Be very careful that there are no duplicated values in the data you upload. Duplicate entries will cause the code to crash or throw errors during execution.
+
+For more information on importing additional half-cell data, refer to the files already present in these folders.
 
    Files should follow a specific naming structure:
 
